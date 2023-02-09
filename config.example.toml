@@ -1,0 +1,9 @@
+[receiver]
+  string-connection=""
+  database-name=""
+  collection-name=""
+
+[sender]
+  string-connection=""
+  database-name=""
+  collection-name=""
