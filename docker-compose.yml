@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  go:
+    image: golang:1.19
+    volumes:
+      - .:/app
+    command: /bin/sh -c "cd /app && go run main.go -f config/config.toml"
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
