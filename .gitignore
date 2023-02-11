@@ -1,3 +1,4 @@
 data/
 config/config.toml
 .env
+.docker/volumes
