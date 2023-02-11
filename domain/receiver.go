@@ -17,9 +17,7 @@ type Receiver struct {
 }
 
 type ReceiverConfig struct {
-	Uri            string `toml:"string-connection"`
-	DatabaseName   string `toml:"database-name"`
-	CollectionName string `toml:"collection-name"`
+	Uri string `toml:"connection"`
 }
 
 func NewReceiver(dbUri string, dbName string, dbCollectName string, dbClient *mongo.Client) Receiver {
@@ -34,13 +32,6 @@ func NewReceiver(dbUri string, dbName string, dbCollectName string, dbClient *mo
 		dbDatabase:   database,
 	}
 }
-func (r Receiver) CreateCollection(ctx context.Context, name string) {
-	err := r.dbDatabase.CreateCollection(ctx, name)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 func (r Receiver) DeleteAllCollection(ctx context.Context) {
 	_, err := r.dbCollection.DeleteMany(ctx, bson.M{})
@@ -51,11 +42,10 @@ func (r Receiver) DeleteAllCollection(ctx context.Context) {
 }
 
 func (r Receiver) InsertOnCollection(ctx context.Context, documents []interface{}) {
-	r.DeleteAllCollection(ctx)
-
 	_, err := r.dbCollection.InsertMany(ctx, documents)
 
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }

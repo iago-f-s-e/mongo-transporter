@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"mongo_transporter/core"
+	"sync"
 	"time"
 )
 
@@ -18,25 +18,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Starting sender instance...")
+	var wgOnStart sync.WaitGroup
 
-	sender :=
-		core.Sender(ctx, config.Sender.Uri, config.Sender.DatabaseName, config.Sender.CollectionName)
+	for _, transferCollection := range config.TransferCollections {
+		wgOnStart.Add(1)
 
-	fmt.Println("Starting receiver instance...")
+		go core.Start(ctx, transferCollection, &config, &wgOnStart)
+	}
 
-	receiver :=
-		core.Receiver(ctx, config.Receiver.Uri, config.Receiver.DatabaseName, config.Receiver.CollectionName)
-
-	fmt.Println("Getting the sender collection...")
-
-	documents, _ := sender.GetCollection(ctx)
-
-	fmt.Println("Successful get sender collection")
-
-	fmt.Println("Inserting documents into the receiver collection...")
-
-	receiver.InsertOnCollection(ctx, documents)
-
-	fmt.Println("Successful insert all documents into the receiver collection")
+	wgOnStart.Wait()
 }

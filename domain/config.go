@@ -1,30 +1,72 @@
 package domain
 
+import (
+	"errors"
+	"mongo_transporter/constants"
+)
+
 type Config struct {
-	Receiver ReceiverConfig
-	Sender   SenderCofing
+	BatchSize           int64    `toml:"batch-size,omitempty"`
+	DatabaseName        string   `toml:"database-name"`
+	TransferCollections []string `toml:"transfer-collections"`
+	Receiver            ReceiverConfig
+	Sender              SenderCofing
 }
 
 type Flags struct {
 	ConfigFile string
 }
 
-func (c Config) IsValid() bool {
-	return receiverConfigIsValid(c.Receiver) && senderConfigIsValid(c.Sender)
+func (c Config) Error() error {
+	err := c.yourselfError()
+
+	if err != nil {
+		return err
+	}
+
+	err = c.receiverConfigError()
+
+	if err != nil {
+		return err
+	}
+
+	err = c.senderConfigError()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func receiverConfigIsValid(r ReceiverConfig) bool {
-	collection := r.CollectionName != ""
-	database := r.DatabaseName != ""
-	uri := r.Uri != ""
+func (c Config) yourselfError() error {
+	if c.BatchSize < 0 {
+		return errors.New(constants.TomlFileBatchSizeError)
+	}
 
-	return collection && database && uri
+	if c.DatabaseName == "" {
+		return errors.New(constants.TomlFileDbNameError)
+	}
+
+	if len(c.TransferCollections) == 0 {
+		return errors.New(constants.TomlFileTransferCollectionsError)
+	}
+
+	return nil
 }
 
-func senderConfigIsValid(s SenderCofing) bool {
-	collection := s.CollectionName != ""
-	database := s.DatabaseName != ""
-	uri := s.Uri != ""
+func (c Config) receiverConfigError() error {
+	if c.Receiver.Uri == "" {
+		return errors.New(constants.TomlFileReceiverUriError)
+	}
 
-	return collection && database && uri
+	return nil
+}
+
+func (c Config) senderConfigError() error {
+	if c.Sender.Uri == "" {
+		return errors.New(constants.TomlFileSenderUriError)
+	}
+
+	return nil
 }

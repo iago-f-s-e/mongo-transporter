@@ -6,6 +6,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Sender struct {
@@ -17,9 +18,7 @@ type Sender struct {
 }
 
 type SenderCofing struct {
-	Uri            string `toml:"string-connection"`
-	DatabaseName   string `toml:"database-name"`
-	CollectionName string `toml:"collection-name"`
+	Uri string `toml:"connection"`
 }
 
 func NewSender(dbUri string, dbName string, dbCollectName string, dbClient *mongo.Client) Sender {
@@ -35,14 +34,18 @@ func NewSender(dbUri string, dbName string, dbCollectName string, dbClient *mong
 	}
 }
 
-func (s Sender) GetCollection(ctx context.Context) ([]interface{}, error) {
+func (s Sender) GetCollectionWithPagination(ctx context.Context, batchSize int64, lastPosition int64) ([]interface{}, int64, error) {
 	var documents []interface{}
 
-	cursor, err := s.dbCollection.Find(ctx, bson.M{})
+	findOptions := options.Find().SetLimit(int64(batchSize)).SetSkip(int64(lastPosition))
+
+	cursor, err := s.dbCollection.Find(ctx, bson.D{}, findOptions)
 
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	defer cursor.Close(ctx)
 
 	for cursor.Next(ctx) {
 		var document bson.M
@@ -51,11 +54,11 @@ func (s Sender) GetCollection(ctx context.Context) ([]interface{}, error) {
 
 		if err != nil {
 			log.Fatal(err)
-			return nil, err
+			return nil, -1, err
 		}
 
 		documents = append(documents, document)
 	}
 
-	return documents, nil
+	return documents, lastPosition + batchSize, nil
 }
