@@ -57,7 +57,7 @@ Com este projeto, você pode facilmente transferir dados de um banco de dados Mo
   ```
 
 ### Configuração 
-O arquivo de configuração `config.toml` permite configurar as informações de origem e destino dos dados. Além disso, é possível configurar outras opções, como a quantidade de goroutine utilizadas para a transferências.
+O arquivo de configuração `config.toml` permite configurar as informações de origem e destino dos dados. Além disso, é possível configurar outras opções, como o tamanho do lote que será transferido.
 
 ### Execução
 Ao executar a aplicação, o container será iniciado e o projeto começará a transportar os dados. É possível verificar o progresso no log do container.

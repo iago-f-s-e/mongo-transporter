@@ -1,9 +1,9 @@
+batch-size=1000
+database-name=""
+transfer-collections=[""]
+
 [receiver]
-  string-connection=""
-  database-name=""
-  collection-name=""
+  connection=""
 
 [sender]
-  string-connection=""
-  database-name=""
-  collection-name=""
+  connection=""

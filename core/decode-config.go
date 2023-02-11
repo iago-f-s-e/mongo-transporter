@@ -1,77 +1,93 @@
 package core
 
 import (
-	"errors"
 	"log"
-	"mongo_transporter/constants"
 	"mongo_transporter/domain"
 	"mongo_transporter/infra"
+	"mongo_transporter/utils"
 )
 
-func decodeReceiver(config interface{}) (domain.ReceiverConfig, error) {
+func decodeReceiver(config interface{}) domain.ReceiverConfig {
 	receiverconfig := domain.ReceiverConfig{}
 	receiver, ok := config.(map[string]interface{})["receiver"]
 
 	if !ok {
-		return receiverconfig, errors.New(constants.TomlFileError)
+		return receiverconfig
 	}
 
-	collection, ok := receiver.(map[string]interface{})["collection-name"]
+	connection, ok := receiver.(map[string]interface{})["connection"]
 
 	if !ok {
-		return receiverconfig, errors.New(constants.TomlFileError)
+		return receiverconfig
 	}
 
-	database, ok := receiver.(map[string]interface{})["database-name"]
-
-	if !ok {
-		return receiverconfig, errors.New(constants.TomlFileError)
-	}
-
-	connection, ok := receiver.(map[string]interface{})["string-connection"]
-
-	if !ok {
-		return receiverconfig, errors.New(constants.TomlFileError)
-	}
-
-	receiverconfig.CollectionName = string(collection.(string))
-	receiverconfig.DatabaseName = string(database.(string))
 	receiverconfig.Uri = string(connection.(string))
 
-	return receiverconfig, nil
+	return receiverconfig
 }
 
-func decodeSender(config interface{}) (domain.SenderCofing, error) {
+func decodeSender(config interface{}) domain.SenderCofing {
 	senderconfig := domain.SenderCofing{}
 	receiver, ok := config.(map[string]interface{})["sender"]
 
 	if !ok {
-		return senderconfig, errors.New(constants.TomlFileError)
+		return senderconfig
 	}
 
-	collection, ok := receiver.(map[string]interface{})["collection-name"]
+	connection, ok := receiver.(map[string]interface{})["connection"]
 
 	if !ok {
-		return senderconfig, errors.New(constants.TomlFileError)
+		return senderconfig
 	}
 
-	database, ok := receiver.(map[string]interface{})["database-name"]
-
-	if !ok {
-		return senderconfig, errors.New(constants.TomlFileError)
-	}
-
-	connection, ok := receiver.(map[string]interface{})["string-connection"]
-
-	if !ok {
-		return senderconfig, errors.New(constants.TomlFileError)
-	}
-
-	senderconfig.CollectionName = string(collection.(string))
-	senderconfig.DatabaseName = string(database.(string))
 	senderconfig.Uri = string(connection.(string))
 
-	return senderconfig, nil
+	return senderconfig
+}
+
+func decodeBatchSize(config interface{}) int64 {
+	batchSizeConfig, ok := config.(map[string]interface{})["batch-size"]
+
+	if !ok {
+		return 1000
+	}
+
+	batchSize, err := utils.ConvertInterfaceToInt64(batchSizeConfig)
+
+	if err != nil {
+		return -1
+	}
+
+	if batchSize < 1000 {
+		batchSize = 1000
+	}
+
+	return batchSize
+}
+
+func decodeDbName(config interface{}) string {
+	dbName, ok := config.(map[string]interface{})["database-name"]
+
+	if !ok {
+		return ""
+	}
+
+	return string(dbName.(string))
+}
+
+func decodeTransferCollections(config interface{}) []string {
+	transferCollections, ok := config.(map[string]interface{})["transfer-collections"]
+	var collections []string
+
+	if !ok {
+		return collections
+	}
+
+	for _, collection := range transferCollections.([]interface{}) {
+		collections = append(collections, string(collection.(string)))
+	}
+
+	return collections
 }
 
 func DecodeConfig(path string) (domain.Config, error) {
@@ -87,27 +103,20 @@ func DecodeConfig(path string) (domain.Config, error) {
 		return config, err
 	}
 
-	receiverConfig, err := decodeReceiver(decodedConfig)
+	batchSize := decodeBatchSize(decodedConfig)
+	dbName := decodeDbName(decodedConfig)
+	transferCollections := decodeTransferCollections(decodedConfig)
+
+	config.BatchSize = batchSize
+	config.DatabaseName = dbName
+	config.TransferCollections = transferCollections
+	config.Receiver = decodeReceiver(decodedConfig)
+	config.Sender = decodeSender(decodedConfig)
+
+	err = config.Error()
 
 	if err != nil {
-		log.Fatal(err)
-
 		return config, err
-	}
-
-	senderConfig, err := decodeSender(decodedConfig)
-
-	if err != nil {
-		log.Fatal(err)
-
-		return config, err
-	}
-
-	config.Receiver = receiverConfig
-	config.Sender = senderConfig
-
-	if !config.IsValid() {
-		return config, errors.New(constants.TomlFileError)
 	}
 
 	return config, nil
