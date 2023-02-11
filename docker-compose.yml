@@ -3,39 +3,8 @@ version: '3.7'
 services:
   go:
     image: golang:1.19
-    depends_on:
-      - mongodb
     volumes:
       - .:/app
-    command: /bin/sh -c "sleep 30 && cd /app && go run main.go -f config/config.toml"
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
-
-  mongodb:
-    image: mongo
-    restart: always
-    ports:
-      - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    volumes:
-      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - ./data:/data/db
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8090:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@host.docker.internal:27017/${MONGO_INITDB_DATABASE}
-    depends_on:
-      - mongodb
+    command: /bin/sh -c "cd /app && go run main.go -f config/config.toml"
     extra_hosts:
       - "host.docker.internal:172.17.0.1"

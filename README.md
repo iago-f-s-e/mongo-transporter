@@ -26,7 +26,32 @@ Com este projeto, você pode facilmente transferir dados de um banco de dados Mo
   cp config.example.toml config/config.toml
   ```
 
-4. Inicie o container:
+
+---
+4. Inicie o container do banco de dados *(opcional)*:
+    1. Crie uma cópia do arquivo `.env.example` com o nome `.env` e preencha as informações necessárias:
+    ```bash
+    cp .env.example .env
+    ```
+
+    2. Inicie o container:
+    ```bash
+    docker-compose -f dev-db.docker-compose.yml up -d
+    ```
+
+    3. Aguarde o container subir, você pode verificar no endpoint abaixo:
+    ```url
+    http://localhost:{MONGO_EXPRESS_PORT}
+    ```
+
+    4. Para parar o container, basta executar o seguinte comando:
+    ```bash
+    docker-compose -f dev-db.docker-compose.yml down
+    ```
+---
+
+
+5. Inicie o container:
   ```bash
   docker-compose up -d
   ```
@@ -35,7 +60,7 @@ Com este projeto, você pode facilmente transferir dados de um banco de dados Mo
 O arquivo de configuração `config.toml` permite configurar as informações de origem e destino dos dados. Além disso, é possível configurar outras opções, como a quantidade de goroutine utilizadas para a transferências.
 
 ### Execução
-Ao executar a aplicação, ela irá aguardar 30 segundos antes de iniciar a transferência de dados. Isto é necessário para garantir que a imagem do MongoDB tenha tempo suficiente para subir.
+Ao executar a aplicação, o container será iniciado e o projeto começará a transportar os dados. É possível verificar o progresso no log do container.
 
 ### Parada
 Para parar o container, basta executar o seguinte comando:
