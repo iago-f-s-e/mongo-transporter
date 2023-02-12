@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"log"
+	"os"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -61,4 +62,17 @@ func (s Sender) GetCollectionWithPagination(ctx context.Context, batchSize int64
 	}
 
 	return documents, lastPosition + batchSize, nil
+}
+
+func (s Sender) WatchCollection(ctx context.Context) *mongo.ChangeStream {
+	pipeline := mongo.Pipeline{}
+
+	watcher, err := s.dbCollection.Watch(ctx, pipeline)
+
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
+	return watcher
 }

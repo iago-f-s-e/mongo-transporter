@@ -1,6 +1,7 @@
 batch-size=1000
 database-name=""
 transfer-collections=[""]
+watch-collections=[""]
 
 [receiver]
   connection=""

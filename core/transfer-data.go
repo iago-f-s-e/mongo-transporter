@@ -2,10 +2,15 @@ package core
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"mongo_transporter/domain"
+	"mongo_transporter/utils"
 	"os"
 	"sync"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func transferData(ctx context.Context, batchSize int64, receiver *domain.Receiver, sender *domain.Sender, wg *sync.WaitGroup) {
@@ -27,12 +32,94 @@ func transferData(ctx context.Context, batchSize int64, receiver *domain.Receive
 		wg.Add(1)
 		go func(documents []interface{}, batchNumber int) {
 			defer wg.Done()
-			fmt.Printf("Inserting batch number %d with size %d\n", batchNumber, len(documents))
+
+			utils.PrintWithCollection(receiver.CollectionName, "[BATCH NUMBER]", batchNumber, "[BATCH SIZE]", len(documents))
+
 			receiver.InsertOnCollection(ctx, documents)
-			fmt.Printf("Successful insert batch number  %d with size %d\n", batchNumber, len(documents))
 		}(documents, count)
 
 		lastPosition = newLastPosition
 		count++
+	}
+}
+
+func transferDataOnInsertEvent(ctx context.Context, event primitive.M, receiver *domain.Receiver) {
+	fullDocument := event["fullDocument"].(primitive.D).Map()
+
+	utils.PrintWithCollection(receiver.CollectionName, "[INSERT]", fullDocument)
+
+	receiver.ReflectWatchOnInsert(ctx, fullDocument)
+}
+
+func transferDataOnDeleteEvent(ctx context.Context, event primitive.M, receiver *domain.Receiver) {
+	_id := event["documentKey"].(primitive.D).Map()["_id"].(primitive.ObjectID)
+
+	utils.PrintWithCollection(receiver.CollectionName, "[DELETE]", _id)
+
+	receiver.ReflectWatchOnDelete(ctx, _id)
+}
+
+func transferDataOnUpdateEvent(ctx context.Context, event primitive.M, receiver *domain.Receiver) {
+	_id := event["documentKey"].(primitive.D).Map()["_id"].(primitive.ObjectID)
+	updateDescription := event["updateDescription"].(primitive.D).Map()
+
+	updatedFields := updateDescription["updatedFields"].(primitive.D)
+	removedFields := updateDescription["removedFields"].(primitive.A)
+
+	mappedRemovedFields := bson.M{}
+
+	for _, field := range removedFields {
+		mappedRemovedFields[field.(string)] = 1
+	}
+
+	utils.PrintWithCollection(receiver.CollectionName, "[UPDATE]", _id)
+	utils.PrintWithCollection(receiver.CollectionName, "[UPDATE FIELDS]", updatedFields)
+	utils.PrintWithCollection(receiver.CollectionName, "[REMOVE FIELDS]", mappedRemovedFields)
+
+	receiver.ReflectWatchOnUpdate(ctx, _id, updatedFields, mappedRemovedFields)
+}
+
+func transferDataOnWatch(ctx context.Context, watcher *mongo.ChangeStream, receiver *domain.Receiver, wg *sync.WaitGroup) {
+	var mutex sync.Mutex
+
+	for watcher.Next(ctx) {
+		var event primitive.D
+
+		err := watcher.Decode(&event)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		mappedEvent := event.Map()
+
+		operationType, ok := mappedEvent["operationType"].(string)
+
+		if !ok {
+			log.Fatal(err)
+		}
+
+		wg.Add(1)
+		mutex.Lock()
+		go func(operation string, event primitive.M) {
+			defer mutex.Unlock()
+			defer wg.Done()
+
+			switch operation {
+			case "insert":
+				transferDataOnInsertEvent(ctx, event, receiver)
+
+			case "delete":
+				transferDataOnDeleteEvent(ctx, event, receiver)
+
+			case "update":
+				transferDataOnUpdateEvent(ctx, event, receiver)
+
+			default:
+				log.Fatal("Invalid event type")
+				os.Exit(1)
+			}
+
+		}(operationType, mappedEvent)
 	}
 }

@@ -90,6 +90,21 @@ func decodeTransferCollections(config interface{}) []string {
 	return collections
 }
 
+func decodeWatchCollections(config interface{}) []string {
+	watchCollections, ok := config.(map[string]interface{})["watch-collections"]
+	var collections []string
+
+	if !ok {
+		return collections
+	}
+
+	for _, collection := range watchCollections.([]interface{}) {
+		collections = append(collections, string(collection.(string)))
+	}
+
+	return collections
+}
+
 func DecodeConfig(path string) (domain.Config, error) {
 	config := domain.Config{}
 
@@ -106,10 +121,12 @@ func DecodeConfig(path string) (domain.Config, error) {
 	batchSize := decodeBatchSize(decodedConfig)
 	dbName := decodeDbName(decodedConfig)
 	transferCollections := decodeTransferCollections(decodedConfig)
+	watchCollections := decodeWatchCollections(decodedConfig)
 
 	config.BatchSize = batchSize
 	config.DatabaseName = dbName
 	config.TransferCollections = transferCollections
+	config.WatchCollections = watchCollections
 	config.Receiver = decodeReceiver(decodedConfig)
 	config.Sender = decodeSender(decodedConfig)
 

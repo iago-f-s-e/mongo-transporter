@@ -9,6 +9,7 @@ type Config struct {
 	BatchSize           int64    `toml:"batch-size,omitempty"`
 	DatabaseName        string   `toml:"database-name"`
 	TransferCollections []string `toml:"transfer-collections"`
+	WatchCollections    []string `toml:"watch-collections,omitempty"`
 	Receiver            ReceiverConfig
 	Sender              SenderCofing
 }
