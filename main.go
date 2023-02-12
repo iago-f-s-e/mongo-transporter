@@ -27,4 +27,17 @@ func main() {
 	}
 
 	wgOnStart.Wait()
+
+	ctx, cancel = context.WithCancel(context.Background())
+	defer cancel()
+
+	var wgOnWatch sync.WaitGroup
+
+	for _, watchCollection := range config.WatchCollections {
+		wgOnWatch.Add(1)
+
+		go core.Watch(ctx, watchCollection, &config, &wgOnWatch)
+	}
+
+	wgOnWatch.Wait()
 }

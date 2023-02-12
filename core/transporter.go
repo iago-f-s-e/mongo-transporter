@@ -9,7 +9,7 @@ import (
 )
 
 func sender(ctx context.Context, dbUri string, dbName string, dbCollection string) domain.Sender {
-	client := infra.MongoConnection(dbUri)
+	client := infra.MongoConnection(ctx, dbUri)
 
 	sender := domain.NewSender(dbUri, dbName, dbCollection, client)
 
@@ -17,7 +17,7 @@ func sender(ctx context.Context, dbUri string, dbName string, dbCollection strin
 }
 
 func receiver(ctx context.Context, dbUri string, dbName string, dbCollection string) domain.Receiver {
-	client := infra.MongoConnection(dbUri)
+	client := infra.MongoConnection(ctx, dbUri)
 
 	recevier := domain.NewReceiver(dbUri, dbName, dbCollection, client)
 
@@ -29,10 +29,7 @@ func Start(ctx context.Context, dbCollection string, config *domain.Config, wgOn
 
 	fmt.Println("Start collection: ", dbCollection)
 
-	fmt.Println("Starting receiver instance...")
 	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, dbCollection)
-
-	fmt.Println("Starting sender instance...")
 	sender := sender(ctx, config.Sender.Uri, config.DatabaseName, dbCollection)
 
 	var wg sync.WaitGroup
@@ -42,4 +39,23 @@ func Start(ctx context.Context, dbCollection string, config *domain.Config, wgOn
 	wg.Wait()
 
 	fmt.Println("End collection: ", dbCollection)
+}
+
+func Watch(ctx context.Context, dbCollection string, config *domain.Config, wgOnWatch *sync.WaitGroup) {
+	defer wgOnWatch.Done()
+
+	fmt.Println("Watch collection: ", dbCollection)
+
+	sender := sender(ctx, config.Sender.Uri, config.DatabaseName, dbCollection)
+	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, dbCollection)
+
+	watcher := sender.WatchCollection(ctx)
+
+	defer watcher.Close(ctx)
+
+	var wg sync.WaitGroup
+
+	transferDataOnWatch(ctx, watcher, &receiver, &wg)
+
+	wg.Wait()
 }

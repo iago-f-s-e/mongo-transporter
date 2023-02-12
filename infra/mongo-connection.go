@@ -2,18 +2,13 @@ package infra
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func MongoConnection(uri string) *mongo.Client {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
+func MongoConnection(ctx context.Context, uri string) *mongo.Client {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 
 	if err != nil {
@@ -32,8 +27,6 @@ func MongoConnection(uri string) *mongo.Client {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf("%s successful connection\n", uri)
 
 	return client
 }

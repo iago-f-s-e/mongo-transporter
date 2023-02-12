@@ -3,7 +3,7 @@ version: '3.7'
 services:
   mongodb:
     image: mongo:6
-    command: mongod --replSet rs0
+    command: mongod --replSet rs0 
     restart: always
     ports:
       - ${MONGO_INITDB_PORT}:27017
@@ -11,7 +11,7 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     volumes:
       - ./.docker/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - ./.docker/volumes/mongo_primary/data:/data/db
+      - ./.docker/volumes/mongodb/data:/data/db
 
   mongo-express:
     image: mongo-express
