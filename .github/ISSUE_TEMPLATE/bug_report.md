@@ -16,11 +16,9 @@ Por favor, forneça uma descrição clara e concisa do problema.
 3. Passo 3
 
 **Comportamento Esperado**
-
 Descreva o comportamento esperado.
 
 **Comportamento Atual**
-
 Descreva o comportamento atual.
 
 **Informações Adicionais**
