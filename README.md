@@ -6,11 +6,50 @@ Este é um projeto para transferência de dados de um banco de dados MongoDB par
 
 Com este projeto, você pode facilmente transferir dados de um banco de dados MongoDB para outro banco compatível com as configurações desejadas.
 
-### Pré-requisitos
+
+### Sumário
+
+- [Pré-requisitos](#pré-requisitos)
+- [Instalação com Docker](#instalação-com-docker)
+- [Instalação com Repositório](#instalação-com-repositório)
+- [Configuração](#configuração)
+- [Execução](#execução)
+- [Parada](#parada)
+- [Contribuição](#contribuição)
+
+
+### <p name="pré-requisitos">Pré-requisitos</p>
  - Docker
  - Docker Compose
 
-### Instalação
+### <p name="instalação-com-docker">Instalação com Docker</p>
+1. Baixe a imagem do projeto executando o comando:
+  ```bash
+  docker pull iagofse/mongo-transporter:latest
+  ```
+
+1. Crie o arquivo de configuração com o nome `config.toml`:
+```toml
+batch-size=1000
+database-name="app-db"
+transfer-collections=["users", "products"]
+watch-collections=["users"]
+
+[receiver]
+  connection="mongodb://localhost:27017/"
+
+[sender]
+  connection="mongodb://remote-server:27017/?directConnection=true"
+```
+
+Veja mais sobre as configurações [_aqui_](#Configuração)
+
+3. Inicie o container no mesmo diretório que você criou o arquivo de configuração:
+  ```bash
+  docker run -v $(pwd):/app/config mongo-transporter-test-build    
+  ```
+
+### <p name="instalação-com-repositório">Instalação com Repositório</p>
 1. Clone este repositório:
   ```bash
   git clone https://github.com/iago-f-s-e/mongo-transporter.git
@@ -56,18 +95,17 @@ Com este projeto, você pode facilmente transferir dados de um banco de dados Mo
   docker-compose up -d
   ```
 
-### Configuração 
-O arquivo de configuração `config.toml` permite configurar as informações de origem e destino dos dados. Além disso, é possível configurar outras opções, como o tamanho do lote que será transferido. Veja mais [_aqui._](./docs/config.md)
+### <p name="configuração">Configuração</p>
+O arquivo de configuração `config.toml` permite configurar as informações de origem e destino dos dados. Além disso, é possível configurar outras opções, como o tamanho do lote que será transferido. Veja mais [_aqui._](https://github.com/iago-f-s-e/mongo-transporter/blob/main/docs/config.md)
 
-
-### Execução
+### <p name="execução">Execução</p>
 Ao executar a aplicação, o container será iniciado e o projeto começará a transportar os dados. É possível verificar o progresso no log do container.
 
-### Parada
+### <p name="parada">Parada</p>
 Para parar o container, basta executar o seguinte comando:
   ```bash
   docker-compose down
   ```
 
-### Contribuição
+### <p name="contribuição">Contribuição</p>
 Contribuições são bem-vindas! Sinta-se livre para enviar um pull request com suas alterações.
