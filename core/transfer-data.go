@@ -13,7 +13,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func transferData(ctx context.Context, batchSize int64, receiver *domain.Receiver, sender *domain.Sender, wg *sync.WaitGroup) {
+func transferData(ctx context.Context, batchSize int64, receiver domain.Receiver, sender *domain.Sender, wg *sync.WaitGroup) {
+	collectionName := receiver.GetCollectionName()
+
 	var lastPosition int64 = 0
 	count := 1
 	receiver.DeleteAllCollection(ctx)
@@ -33,7 +35,7 @@ func transferData(ctx context.Context, batchSize int64, receiver *domain.Receive
 		go func(documents []interface{}, batchNumber int) {
 			defer wg.Done()
 
-			utils.PrintWithCollection(receiver.CollectionName, "[BATCH NUMBER]", batchNumber, "[BATCH SIZE]", len(documents))
+			utils.PrintWithCollection(collectionName, "[BATCH NUMBER]", batchNumber, "[BATCH SIZE]", len(documents))
 
 			receiver.InsertOnCollection(ctx, documents)
 		}(documents, count)
@@ -43,23 +45,29 @@ func transferData(ctx context.Context, batchSize int64, receiver *domain.Receive
 	}
 }
 
-func transferDataOnInsertEvent(ctx context.Context, event primitive.M, receiver *domain.Receiver) {
+func transferDataOnInsertEvent(ctx context.Context, event primitive.M, receiver domain.Receiver) {
+	collectionName := receiver.GetCollectionName()
+
 	fullDocument := event["fullDocument"].(primitive.D).Map()
 
-	utils.PrintWithCollection(receiver.CollectionName, "[INSERT]", fullDocument)
+	utils.PrintWithCollection(collectionName, "[INSERT]", fullDocument)
 
 	receiver.ReflectWatchOnInsert(ctx, fullDocument)
 }
 
-func transferDataOnDeleteEvent(ctx context.Context, event primitive.M, receiver *domain.Receiver) {
+func transferDataOnDeleteEvent(ctx context.Context, event primitive.M, receiver domain.Receiver) {
+	collectionName := receiver.GetCollectionName()
+
 	_id := event["documentKey"].(primitive.D).Map()["_id"].(primitive.ObjectID)
 
-	utils.PrintWithCollection(receiver.CollectionName, "[DELETE]", _id)
+	utils.PrintWithCollection(collectionName, "[DELETE]", _id)
 
 	receiver.ReflectWatchOnDelete(ctx, _id)
 }
 
-func transferDataOnUpdateEvent(ctx context.Context, event primitive.M, receiver *domain.Receiver) {
+func transferDataOnUpdateEvent(ctx context.Context, event primitive.M, receiver domain.Receiver) {
+	collectionName := receiver.GetCollectionName()
+
 	_id := event["documentKey"].(primitive.D).Map()["_id"].(primitive.ObjectID)
 	updateDescription := event["updateDescription"].(primitive.D).Map()
 
@@ -72,14 +80,14 @@ func transferDataOnUpdateEvent(ctx context.Context, event primitive.M, receiver 
 		mappedRemovedFields[field.(string)] = 1
 	}
 
-	utils.PrintWithCollection(receiver.CollectionName, "[UPDATE]", _id)
-	utils.PrintWithCollection(receiver.CollectionName, "[UPDATE FIELDS]", updatedFields)
-	utils.PrintWithCollection(receiver.CollectionName, "[REMOVE FIELDS]", mappedRemovedFields)
+	utils.PrintWithCollection(collectionName, "[UPDATE]", _id)
+	utils.PrintWithCollection(collectionName, "[UPDATE FIELDS]", updatedFields)
+	utils.PrintWithCollection(collectionName, "[REMOVE FIELDS]", mappedRemovedFields)
 
 	receiver.ReflectWatchOnUpdate(ctx, _id, updatedFields, mappedRemovedFields)
 }
 
-func transferDataOnWatch(ctx context.Context, watcher *mongo.ChangeStream, receiver *domain.Receiver, wg *sync.WaitGroup) {
+func transferDataOnWatch(ctx context.Context, watcher *mongo.ChangeStream, receiver domain.Receiver, wg *sync.WaitGroup) {
 	var mutex sync.Mutex
 
 	for watcher.Next(ctx) {

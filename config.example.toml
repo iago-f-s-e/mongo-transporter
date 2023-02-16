@@ -5,6 +5,7 @@ watch-collections=[""]
 
 [receiver]
   connection=""
+  type="mongodb"
 
 [sender]
   connection=""

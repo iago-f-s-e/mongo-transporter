@@ -22,6 +22,7 @@ func decodeReceiver(config interface{}) domain.ReceiverConfig {
 	}
 
 	receiverconfig.Uri = string(connection.(string))
+	receiverconfig.Type = decodeReceiverType(receiver)
 
 	return receiverconfig
 }
@@ -73,6 +74,21 @@ func decodeDbName(config interface{}) string {
 	}
 
 	return string(dbName.(string))
+}
+
+func decodeReceiverType(receiver interface{}) string {
+
+	receiverType, ok := receiver.(map[string]interface{})["type"]
+
+	if !ok {
+		return "mongodb"
+
+	}
+	if !utils.IsReceiverType(receiverType.(string)) {
+		return ""
+	}
+
+	return string(receiverType.(string))
 }
 
 func decodeTransferCollections(config interface{}) []string {
