@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"mongo_transporter/adapters"
 	"mongo_transporter/domain"
 	"mongo_transporter/infra"
 	"sync"
@@ -16,12 +17,16 @@ func sender(ctx context.Context, dbUri string, dbName string, dbCollection strin
 	return sender
 }
 
-func receiver(ctx context.Context, dbUri string, dbName string, dbCollection string) domain.Receiver {
-	client := infra.MongoConnection(ctx, dbUri)
+func receiver(ctx context.Context, dbUri string, dbName string, dbCollection string, receiverType string) domain.Receiver {
+	switch receiverType {
 
-	recevier := domain.NewReceiver(dbUri, dbName, dbCollection, client)
+	default:
+		client := infra.MongoConnection(ctx, dbUri)
 
-	return recevier
+		recevier := adapters.NewMongoReceiver(dbUri, dbName, dbCollection, client)
+
+		return recevier
+	}
 }
 
 func Start(ctx context.Context, dbCollection string, config *domain.Config, wgOnStart *sync.WaitGroup) {
@@ -29,12 +34,12 @@ func Start(ctx context.Context, dbCollection string, config *domain.Config, wgOn
 
 	fmt.Println("Start collection: ", dbCollection)
 
-	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, dbCollection)
+	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, dbCollection, config.Receiver.Type)
 	sender := sender(ctx, config.Sender.Uri, config.DatabaseName, dbCollection)
 
 	var wg sync.WaitGroup
 
-	transferData(ctx, config.BatchSize, &receiver, &sender, &wg)
+	transferData(ctx, config.BatchSize, receiver, &sender, &wg)
 
 	wg.Wait()
 
@@ -47,7 +52,7 @@ func Watch(ctx context.Context, dbCollection string, config *domain.Config, wgOn
 	fmt.Println("Watch collection: ", dbCollection)
 
 	sender := sender(ctx, config.Sender.Uri, config.DatabaseName, dbCollection)
-	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, dbCollection)
+	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, dbCollection, config.Receiver.Type)
 
 	watcher := sender.WatchCollection(ctx)
 
@@ -55,7 +60,7 @@ func Watch(ctx context.Context, dbCollection string, config *domain.Config, wgOn
 
 	var wg sync.WaitGroup
 
-	transferDataOnWatch(ctx, watcher, &receiver, &wg)
+	transferDataOnWatch(ctx, watcher, receiver, &wg)
 
 	wg.Wait()
 }

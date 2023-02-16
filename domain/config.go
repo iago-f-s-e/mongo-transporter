@@ -61,6 +61,10 @@ func (c Config) receiverConfigError() error {
 		return errors.New(constants.TomlFileReceiverUriError)
 	}
 
+	if c.Receiver.Type == "" {
+		return errors.New(constants.TomlFileReceiverTypeError)
+	}
+
 	return nil
 }
 
