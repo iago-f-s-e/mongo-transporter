@@ -2,7 +2,9 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"log"
+	"mongo_transporter/constants"
 	"os"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -10,16 +12,24 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type SenderCofing struct {
+	Uri string `toml:"connection"`
+}
+
+func (s SenderCofing) Error() error {
+	if s.Uri == "" {
+		return errors.New(constants.TomlFileSenderUriError)
+	}
+
+	return nil
+}
+
 type Sender struct {
 	dbUri        string
 	dbName       string
 	dbCollection *mongo.Collection
 	dbClient     *mongo.Client
 	dbDatabase   *mongo.Database
-}
-
-type SenderCofing struct {
-	Uri string `toml:"connection"`
 }
 
 func NewSender(dbUri string, dbName string, dbCollectName string, dbClient *mongo.Client) Sender {

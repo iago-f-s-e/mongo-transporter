@@ -12,6 +12,7 @@ type Config struct {
 	WatchCollections    []string `toml:"watch-collections,omitempty"`
 	Receiver            ReceiverConfig
 	Sender              SenderCofing
+	Mapping             MappingConfig
 }
 
 type Flags struct {
@@ -25,13 +26,19 @@ func (c Config) Error() error {
 		return err
 	}
 
-	err = c.receiverConfigError()
+	err = c.Mapping.Error()
 
 	if err != nil {
 		return err
 	}
 
-	err = c.senderConfigError()
+	err = c.Receiver.Error()
+
+	if err != nil {
+		return err
+	}
+
+	err = c.Sender.Error()
 
 	if err != nil {
 		return err
@@ -56,22 +63,12 @@ func (c Config) yourselfError() error {
 	return nil
 }
 
-func (c Config) receiverConfigError() error {
-	if c.Receiver.Uri == "" {
-		return errors.New(constants.TomlFileReceiverUriError)
+func (c Config) GetCollectionMap(name string) string {
+	collection, ok := c.Mapping.Collection[name]
+
+	if !ok {
+		return name
 	}
 
-	if c.Receiver.Type == "" {
-		return errors.New(constants.TomlFileReceiverTypeError)
-	}
-
-	return nil
-}
-
-func (c Config) senderConfigError() error {
-	if c.Sender.Uri == "" {
-		return errors.New(constants.TomlFileSenderUriError)
-	}
-
-	return nil
+	return collection
 }

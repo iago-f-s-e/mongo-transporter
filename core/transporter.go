@@ -29,13 +29,13 @@ func receiver(ctx context.Context, dbUri string, dbName string, dbCollection str
 	}
 }
 
-func Start(ctx context.Context, dbCollection string, config *domain.Config, wgOnStart *sync.WaitGroup) {
+func Start(ctx context.Context, dbCollection string, mapCollection string, config *domain.Config, wgOnStart *sync.WaitGroup) {
 	defer wgOnStart.Done()
 
 	fmt.Println("Start collection: ", dbCollection)
 
-	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, dbCollection, config.Receiver.Type)
 	sender := sender(ctx, config.Sender.Uri, config.DatabaseName, dbCollection)
+	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, mapCollection, config.Receiver.Type)
 
 	var wg sync.WaitGroup
 
@@ -46,13 +46,13 @@ func Start(ctx context.Context, dbCollection string, config *domain.Config, wgOn
 	fmt.Println("End collection: ", dbCollection)
 }
 
-func Watch(ctx context.Context, dbCollection string, config *domain.Config, wgOnWatch *sync.WaitGroup) {
+func Watch(ctx context.Context, dbCollection string, mapCollection string, config *domain.Config, wgOnWatch *sync.WaitGroup) {
 	defer wgOnWatch.Done()
 
 	fmt.Println("Watch collection: ", dbCollection)
 
 	sender := sender(ctx, config.Sender.Uri, config.DatabaseName, dbCollection)
-	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, dbCollection, config.Receiver.Type)
+	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, mapCollection, config.Receiver.Type)
 
 	watcher := sender.WatchCollection(ctx)
 

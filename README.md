@@ -41,6 +41,14 @@ watch-collections=["users"]
 
 [sender]
   connection="mongodb://remote-server:27017/?directConnection=true"
+
+[[mapping]]
+  collection-name="products"
+  collection-map="production_products"
+
+[[mapping]]
+  collection-name="users"
+  collection-map="REMOTE_USERS"
 ```
 
 Veja mais sobre as configurações [_aqui_](#Configuração)
