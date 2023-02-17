@@ -9,3 +9,7 @@ watch-collections=[""]
 
 [sender]
   connection=""
+
+[[mapping]]
+  collection-name=""
+  collection-map=""
