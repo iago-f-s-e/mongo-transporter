@@ -14,4 +14,8 @@ const TomlFileReceiverUriError string = "[ERROR] receiver connection is not vali
 
 const TomlFileSenderUriError string = "[ERROR] sender connection is not valid, must not be empty"
 
+const TomlFileMappingColletionNameError string = "[ERROR] mapping is not valid, collection name must not be empty"
+
+const TomlFileMappingColletionMapError string = "[ERROR] mapping is not valid, collection map must not be empty"
+
 var TomlFileReceiverTypeError string = fmt.Sprint("[ERROR] receiver type is not valid, must be on the list of compatible receivers: ", ReceiverTypes)

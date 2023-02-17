@@ -21,9 +21,11 @@ func main() {
 	var wgOnStart sync.WaitGroup
 
 	for _, transferCollection := range config.TransferCollections {
+		collectionMap := config.GetCollectionMap(transferCollection)
+
 		wgOnStart.Add(1)
 
-		go core.Start(ctx, transferCollection, &config, &wgOnStart)
+		go core.Start(ctx, transferCollection, collectionMap, &config, &wgOnStart)
 	}
 
 	wgOnStart.Wait()
@@ -34,9 +36,11 @@ func main() {
 	var wgOnWatch sync.WaitGroup
 
 	for _, watchCollection := range config.WatchCollections {
+		collectionMap := config.GetCollectionMap(watchCollection)
+
 		wgOnWatch.Add(1)
 
-		go core.Watch(ctx, watchCollection, &config, &wgOnWatch)
+		go core.Watch(ctx, watchCollection, collectionMap, &config, &wgOnWatch)
 	}
 
 	wgOnWatch.Wait()

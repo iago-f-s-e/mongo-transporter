@@ -46,6 +46,32 @@ func decodeSender(config interface{}) domain.SenderCofing {
 	return senderconfig
 }
 
+func decodeMapping(config interface{}) domain.MappingConfig {
+	mappingConfig := domain.MappingConfig{}
+	mappingCollectionConfig := make(map[string]string)
+
+	mapping, ok := config.(map[string]interface{})["mapping"]
+
+	if !ok {
+		return mappingConfig
+	}
+
+	mappingList := mapping.([]map[string]interface{})
+
+	for _, values := range mappingList {
+		collectionName, okName := values["collection-name"]
+		mapCollectionTo, okMap := values["collection-map"]
+
+		if okName && okMap {
+			mappingCollectionConfig[collectionName.(string)] = string(mapCollectionTo.(string))
+		}
+	}
+
+	mappingConfig.Collection = mappingCollectionConfig
+
+	return mappingConfig
+}
+
 func decodeBatchSize(config interface{}) int64 {
 	batchSizeConfig, ok := config.(map[string]interface{})["batch-size"]
 
@@ -145,6 +171,7 @@ func DecodeConfig(path string) (domain.Config, error) {
 	config.WatchCollections = watchCollections
 	config.Receiver = decodeReceiver(decodedConfig)
 	config.Sender = decodeSender(decodedConfig)
+	config.Mapping = decodeMapping(decodedConfig)
 
 	err = config.Error()
 
