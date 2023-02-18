@@ -7,7 +7,6 @@ import (
 	"mongo_transporter/constants"
 	"mongo_transporter/domain"
 	"mongo_transporter/infra"
-	"os"
 	"sync"
 )
 
@@ -22,14 +21,12 @@ func sender(ctx context.Context, dbUri string, dbName string, dbCollection strin
 func receiver(ctx context.Context, collection string, config *domain.Config) domain.Receiver {
 	switch config.Receiver.Type {
 
-	case constants.ReceiverTypeDynamoDb: // WIP
-		infra.DynamoConnection(config.Receiver.Uri, config.Receiver.Region, config.Receiver.DisablleSSL)
+	case constants.ReceiverTypeDynamoDb:
+		client := infra.DynamoConnection(config.Receiver.Uri, "local", true) // TODO config.Receiver.Region, config.Receiver.DisablleSSL)
 
-		os.Exit(1)
+		recevier := adapters.NewDynamoReceiver(config.Receiver.Uri, config.DatabaseName, collection, client)
 
-		var wip domain.Receiver
-
-		return wip
+		return recevier
 
 	default:
 		client := infra.MongoConnection(ctx, config.Receiver.Uri)

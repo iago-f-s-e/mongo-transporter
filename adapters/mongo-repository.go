@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (r MongoReceiver) DeleteAllCollection(ctx context.Context) {
+func (r MongoReceiver) SetupCollection(ctx context.Context) {
 	_, err := r.dbCollection.DeleteMany(ctx, bson.M{})
 
 	if err != nil {

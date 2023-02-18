@@ -29,7 +29,7 @@ func (r ReceiverConfig) Error() error {
 
 type Receiver interface {
 	GetCollectionName() string
-	DeleteAllCollection(ctx context.Context)
+	SetupCollection(ctx context.Context)
 	InsertOnCollection(ctx context.Context, documents []interface{})
 	ReflectWatchOnInsert(ctx context.Context, fullDocument primitive.M)
 	ReflectWatchOnDelete(ctx context.Context, id primitive.ObjectID)
