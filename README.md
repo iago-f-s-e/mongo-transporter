@@ -79,22 +79,22 @@ Veja mais sobre as configurações [_aqui_](#Configuração)
 4. Inicie o container do banco de dados *(opcional)*:
     1. Crie uma cópia do arquivo `.env.example` com o nome `.env` e preencha as informações necessárias:
     ```bash
-    cp .env.example .env
+    cp .drivers/[mongo, dynamo]/.env.example .drivers/[mongo, dynamo]/.env
     ```
 
     2. Inicie o container:
     ```bash
-    docker-compose -f dev-db.docker-compose.yml up -d
+    docker-compose -f .drivers/[mongo, dynamo]/docker-compose.yml up -d
     ```
 
     3. Aguarde o container subir, você pode verificar no endpoint abaixo:
     ```url
-    http://localhost:{MONGO_EXPRESS_PORT}
+    http://localhost:{UI_PORT}
     ```
 
     4. Para parar o container, basta executar o seguinte comando:
     ```bash
-    docker-compose -f dev-db.docker-compose.yml down
+    docker-compose -f .drivers/[mongo, dynamo]/docker-compose.yml down
     ```
 ---
 
