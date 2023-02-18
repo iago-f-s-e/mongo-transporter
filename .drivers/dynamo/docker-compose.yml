@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  dynamodb:
+    image: amazon/dynamodb-local:1.21.0
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /dynamodb_local"
+    restart: always
+    ports:
+      - ${DYNAMO_PORT}:8000
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+    volumes:
+      - ../../.docker/volumes/dynamodb:/dynamodb_local
+
+  dynamodb_admin:
+    image: aaronshaf/dynamodb-admin:4.5.1
+    restart: always
+    ports:
+      - ${UI_PORT}:8001
+    environment:
+      DYNAMO_ENDPOINT: http://host.docker.internal:${DYNAMO_PORT}
+    depends_on:
+      - dynamodb
+
