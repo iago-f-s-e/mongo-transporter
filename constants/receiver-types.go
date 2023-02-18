@@ -2,4 +2,6 @@ package constants
 
 const ReceiverTypeMongoDb = "mongodb"
 
-var ReceiverTypes = []string{ReceiverTypeMongoDb}
+const ReceiverTypeDynamoDb = "dynamodb"
+
+var ReceiverTypes = []string{ReceiverTypeMongoDb, ReceiverTypeDynamoDb}

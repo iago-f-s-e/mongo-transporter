@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"mongo_transporter/adapters"
+	"mongo_transporter/constants"
 	"mongo_transporter/domain"
 	"mongo_transporter/infra"
+	"os"
 	"sync"
 )
 
@@ -17,13 +19,22 @@ func sender(ctx context.Context, dbUri string, dbName string, dbCollection strin
 	return sender
 }
 
-func receiver(ctx context.Context, dbUri string, dbName string, dbCollection string, receiverType string) domain.Receiver {
-	switch receiverType {
+func receiver(ctx context.Context, collection string, config *domain.Config) domain.Receiver {
+	switch config.Receiver.Type {
+
+	case constants.ReceiverTypeDynamoDb: // WIP
+		infra.DynamoConnection(config.Receiver.Uri, config.Receiver.Region, config.Receiver.DisablleSSL)
+
+		os.Exit(1)
+
+		var wip domain.Receiver
+
+		return wip
 
 	default:
-		client := infra.MongoConnection(ctx, dbUri)
+		client := infra.MongoConnection(ctx, config.Receiver.Uri)
 
-		recevier := adapters.NewMongoReceiver(dbUri, dbName, dbCollection, client)
+		recevier := adapters.NewMongoReceiver(config.Receiver.Uri, config.DatabaseName, collection, client)
 
 		return recevier
 	}
@@ -35,7 +46,7 @@ func Start(ctx context.Context, dbCollection string, mapCollection string, confi
 	fmt.Println("Start collection: ", dbCollection)
 
 	sender := sender(ctx, config.Sender.Uri, config.DatabaseName, dbCollection)
-	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, mapCollection, config.Receiver.Type)
+	receiver := receiver(ctx, mapCollection, config)
 
 	var wg sync.WaitGroup
 
@@ -52,7 +63,7 @@ func Watch(ctx context.Context, dbCollection string, mapCollection string, confi
 	fmt.Println("Watch collection: ", dbCollection)
 
 	sender := sender(ctx, config.Sender.Uri, config.DatabaseName, dbCollection)
-	receiver := receiver(ctx, config.Receiver.Uri, config.DatabaseName, mapCollection, config.Receiver.Type)
+	receiver := receiver(ctx, mapCollection, config)
 
 	watcher := sender.WatchCollection(ctx)
 
