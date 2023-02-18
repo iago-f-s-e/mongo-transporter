@@ -9,8 +9,10 @@ import (
 )
 
 type ReceiverConfig struct {
-	Uri  string `toml:"connection"`
-	Type string `toml:"type,omitempty"`
+	Uri         string `toml:"connection"`
+	DisablleSSL bool   `toml:"disable-ssl,omitempty"`
+	Region      string `toml:"region,omitempty"`
+	Type        string `toml:"type,omitempty"`
 }
 
 func (r ReceiverConfig) Error() error {

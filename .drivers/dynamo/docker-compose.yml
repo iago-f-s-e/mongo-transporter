@@ -7,6 +7,9 @@ services:
     restart: always
     ports:
       - ${DYNAMO_PORT}:8000
+    environment:
+      AWS_REGION: local
+      AWS_DEFAULT_REGION: local
     extra_hosts:
       - "host.docker.internal:172.17.0.1"
     volumes:
