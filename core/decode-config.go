@@ -2,6 +2,7 @@ package core
 
 import (
 	"log"
+	"mongo_transporter/constants"
 	"mongo_transporter/domain"
 	"mongo_transporter/infra"
 	"mongo_transporter/utils"
@@ -110,7 +111,7 @@ func decodeReceiverRegion(receiver interface{}) string {
 	receiverRegion, ok := receiver.(map[string]interface{})["region"]
 
 	if !ok {
-		return "local"
+		return constants.ReceiverDefaultLocally
 
 	}
 
