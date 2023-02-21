@@ -38,6 +38,7 @@ watch-collections=["users"]
 [receiver]
   connection="mongodb://localhost:27017/"
   type="mongodb"
+  region="local"
 
 [sender]
   connection="mongodb://remote-server:27017/?directConnection=true"

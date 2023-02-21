@@ -23,6 +23,10 @@ func decodeReceiver(config interface{}) domain.ReceiverConfig {
 
 	receiverconfig.Uri = string(connection.(string))
 	receiverconfig.Type = decodeReceiverType(receiver)
+	receiverconfig.Region = decodeReceiverRegion(receiver)
+	receiverconfig.AccessKeyId = decodeReceiverAccessKeyId(receiver)
+	receiverconfig.SecretAccessKey = decodeReceiverSecretAccessKey(receiver)
+	receiverconfig.SessionToken = decodeReceiverSessionToken(receiver)
 
 	return receiverconfig
 }
@@ -100,6 +104,50 @@ func decodeDbName(config interface{}) string {
 	}
 
 	return string(dbName.(string))
+}
+
+func decodeReceiverRegion(receiver interface{}) string {
+	receiverRegion, ok := receiver.(map[string]interface{})["region"]
+
+	if !ok {
+		return "local"
+
+	}
+
+	return string(receiverRegion.(string))
+}
+
+func decodeReceiverAccessKeyId(receiver interface{}) string {
+	accessKeyId, ok := receiver.(map[string]interface{})["access-key-id"]
+
+	if !ok {
+		return ""
+
+	}
+
+	return string(accessKeyId.(string))
+}
+
+func decodeReceiverSecretAccessKey(receiver interface{}) string {
+	secretAccessKey, ok := receiver.(map[string]interface{})["secret-access-key"]
+
+	if !ok {
+		return ""
+
+	}
+
+	return string(secretAccessKey.(string))
+}
+
+func decodeReceiverSessionToken(receiver interface{}) string {
+	sessionToken, ok := receiver.(map[string]interface{})["session-token"]
+
+	if !ok {
+		return ""
+
+	}
+
+	return string(sessionToken.(string))
 }
 
 func decodeReceiverType(receiver interface{}) string {
