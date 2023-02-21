@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"log"
+	"mongo_transporter/constants"
 	"mongo_transporter/domain"
 	"mongo_transporter/utils"
 	"os"
@@ -13,12 +14,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func transferData(ctx context.Context, batchSize int64, receiver domain.Receiver, sender *domain.Sender, wg *sync.WaitGroup) {
+func transferData(ctx context.Context, batchSize int64, region string, receiver domain.Receiver, sender *domain.Sender, wg *sync.WaitGroup) {
+
 	collectionName := receiver.GetCollectionName()
 
 	var lastPosition int64 = 0
 	count := 1
-	receiver.SetupCollection(ctx)
+
+	if region == constants.ReceiverDefaultLocally {
+		receiver.SetupCollection(ctx)
+	}
 
 	for {
 		documents, newLastPosition, err := sender.GetCollectionWithPagination(ctx, batchSize, lastPosition)

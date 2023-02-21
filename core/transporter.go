@@ -47,7 +47,7 @@ func Start(ctx context.Context, dbCollection string, mapCollection string, confi
 
 	var wg sync.WaitGroup
 
-	transferData(ctx, config.BatchSize, receiver, &sender, &wg)
+	transferData(ctx, config.BatchSize, config.Receiver.Region, receiver, &sender, &wg)
 
 	wg.Wait()
 
