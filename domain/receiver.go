@@ -9,10 +9,12 @@ import (
 )
 
 type ReceiverConfig struct {
-	Uri         string `toml:"connection"`
-	DisablleSSL bool   `toml:"disable-ssl,omitempty"`
-	Region      string `toml:"region,omitempty"`
-	Type        string `toml:"type,omitempty"`
+	Uri             string `toml:"connection"`
+	Region          string `toml:"region,omitempty"`
+	AccessKeyId     string `toml:"access-key-id,omitempty"`
+	SecretAccessKey string `toml:"secret-access-key,omitempty"`
+	SessionToken    string `toml:"session-token,omitempty"`
+	Type            string `toml:"type,omitempty"`
 }
 
 func (r ReceiverConfig) Error() error {

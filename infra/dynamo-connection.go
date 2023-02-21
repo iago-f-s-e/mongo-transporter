@@ -8,9 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
-func DynamoConnection(uri string, region string, disableSSL bool) *dynamodb.DynamoDB {
+func DynamoConnection(uri string, region string, accessKey string, secretAccess string, sessionToken string) *dynamodb.DynamoDB {
 	sess, err := session.NewSession(&aws.Config{
-		DisableSSL:                aws.Bool(disableSSL),
 		DisableEndpointHostPrefix: aws.Bool(true),
 		Region:                    aws.String(region),
 		Endpoint:                  aws.String(uri),

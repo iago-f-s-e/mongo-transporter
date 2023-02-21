@@ -6,6 +6,10 @@ watch-collections=[""]
 [receiver]
   connection=""
   type="mongodb"
+  region="local"
+  access-key-id=""
+  secret-access-key=""
+  session-token=""
 
 [sender]
   connection=""

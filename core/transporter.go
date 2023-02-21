@@ -22,7 +22,7 @@ func receiver(ctx context.Context, collection string, config *domain.Config) dom
 	switch config.Receiver.Type {
 
 	case constants.ReceiverTypeDynamoDb:
-		client := infra.DynamoConnection(config.Receiver.Uri, "local", true) // TODO config.Receiver.Region, config.Receiver.DisablleSSL)
+		client := infra.DynamoConnection(config.Receiver.Uri, config.Receiver.Region, config.Receiver.AccessKeyId, config.Receiver.SecretAccessKey, config.Receiver.SessionToken)
 
 		recevier := adapters.NewDynamoReceiver(config.Receiver.Uri, config.DatabaseName, collection, client)
 

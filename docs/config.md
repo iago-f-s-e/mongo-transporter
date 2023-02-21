@@ -12,6 +12,8 @@ watch-collections=["users"]
 [receiver]
   connection="mongodb://localhost:27017/"
   type="mongodb"
+  region="local"
+  disable-ssl=true
 
 [sender]
   connection="mongodb://remote-server:27017/?directConnection=true"
@@ -44,6 +46,8 @@ watch-collections=["users"]
 
 ---
 
+  session-token=""
+
 - **receiver _(obrigatório)_:** Seção que armazena as informações de conexão do banco de dados destinatário.
 
   - **connection _(obrigatório)_:** URL de conexão do banco de dados destinatário
@@ -53,6 +57,26 @@ watch-collections=["users"]
   - **type _(opcional)_:** Tipo do banco de dados destinatário. Lista de tipos compatíveis:
     - mongodb _(default)_
 
+    ---
+
+  - **region _(opcional)_:** Região onde está hospedado o banco de dados, exemplos:
+    - local _(default)_
+    - us-east-1
+    - us-east-2
+    - us-west-1
+    - us-west-2
+
+    ---
+
+  - **access-key-id _(opcional)_:** Chave de acesso (AWS)
+
+    ---
+
+  - **secret-access-key _(opcional)_:** Chave de acesso secret (AWS)
+
+    ---
+
+  - **session-token _(opcional)_:** Token da sessão (AWS)
 ---
 
 - **sender _(obrigatório)_:** Seção que armazena as informações de conexão do banco de dados remetente.
