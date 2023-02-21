@@ -112,7 +112,10 @@ func decodeReceiverRegion(receiver interface{}) string {
 
 	if !ok {
 		return constants.ReceiverDefaultLocally
+	}
 
+	if receiverRegion == "" {
+		return constants.ReceiverDefaultLocally
 	}
 
 	return string(receiverRegion.(string))
