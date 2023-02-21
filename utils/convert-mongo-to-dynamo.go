@@ -9,31 +9,51 @@ func ConvertMongoToDynamo(doc *interface{}, primitiveType string) {
 	if primitiveType == "A" {
 		for index, obj := range (*doc).(primitive.A) {
 
-			for key, prop := range obj.(primitive.M) {
+			switch objTyped := obj.(type) {
+			case primitive.M:
+				for key, prop := range objTyped {
 
-				switch typed := prop.(type) {
-				case primitive.ObjectID:
-					obj.(primitive.M)[key] = typed.Hex()
-					continue
+					switch typed := prop.(type) {
+					case primitive.ObjectID:
+						obj.(primitive.M)[key] = typed.Hex()
+						continue
 
-				case primitive.DateTime:
-					obj.(primitive.M)[key] = typed.Time().Format("2006-01-02T15:04:05.000Z")
-					continue
+					case primitive.DateTime:
+						obj.(primitive.M)[key] = typed.Time().Format("2006-01-02T15:04:05.000Z")
+						continue
 
-				case primitive.M:
-					converted := obj.(primitive.M)[key]
+					case primitive.M:
+						converted := obj.(primitive.M)[key]
 
-					ConvertMongoToDynamo(&converted, "M")
+						ConvertMongoToDynamo(&converted, "M")
 
-					obj.(primitive.M)[key] = converted
-					continue
+						obj.(primitive.M)[key] = converted
+						continue
 
-				default:
-					continue
+					case primitive.A:
+						var converted interface{} = typed
+
+						ConvertMongoToDynamo(&converted, "A")
+
+						obj.(primitive.M)[key] = converted
+						continue
+
+					default:
+						continue
+					}
+
 				}
+
+				(*doc).(primitive.A)[index] = obj
+				continue
+
+			default:
+
+				(*doc).(primitive.A)[index] = objTyped
+
+				continue
 			}
 
-			(*doc).(primitive.A)[index] = obj
 		}
 	} else {
 		for key, value := range (*doc).(primitive.M) {
