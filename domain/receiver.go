@@ -9,12 +9,13 @@ import (
 )
 
 type ReceiverConfig struct {
-	Uri             string `toml:"connection"`
-	Region          string `toml:"region,omitempty"`
-	AccessKeyId     string `toml:"access-key-id,omitempty"`
-	SecretAccessKey string `toml:"secret-access-key,omitempty"`
-	SessionToken    string `toml:"session-token,omitempty"`
-	Type            string `toml:"type,omitempty"`
+	Uri                string `toml:"connection"`
+	Region             string `toml:"region,omitempty"`
+	AccessKeyId        string `toml:"access-key-id,omitempty"`
+	SecretAccessKey    string `toml:"secret-access-key,omitempty"`
+	SessionToken       string `toml:"session-token,omitempty"`
+	Type               string `toml:"type,omitempty"`
+	CanSetupCollection bool
 }
 
 func (r ReceiverConfig) Error() error {

@@ -29,6 +29,8 @@ func decodeReceiver(config interface{}) domain.ReceiverConfig {
 	receiverconfig.SecretAccessKey = decodeReceiverSecretAccessKey(receiver)
 	receiverconfig.SessionToken = decodeReceiverSessionToken(receiver)
 
+	receiverconfig.CanSetupCollection = receiverconfig.Type == constants.ReceiverTypeMongoDb || receiverconfig.Region == constants.ReceiverDefaultLocally
+
 	return receiverconfig
 }
 

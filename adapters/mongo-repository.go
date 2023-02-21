@@ -7,6 +7,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (r MongoReceiver) SetupCollection(ctx context.Context) {
@@ -18,7 +19,9 @@ func (r MongoReceiver) SetupCollection(ctx context.Context) {
 }
 
 func (r MongoReceiver) InsertOnCollection(ctx context.Context, documents []interface{}) {
-	_, err := r.dbCollection.InsertMany(ctx, documents)
+	options := options.InsertMany().SetOrdered(false)
+
+	_, err := r.dbCollection.InsertMany(ctx, documents, options)
 
 	if err != nil {
 		log.Fatal(err)

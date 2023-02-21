@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"log"
-	"mongo_transporter/constants"
 	"mongo_transporter/domain"
 	"mongo_transporter/utils"
 	"os"
@@ -14,14 +13,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func transferData(ctx context.Context, batchSize int64, region string, receiver domain.Receiver, sender *domain.Sender, wg *sync.WaitGroup) {
+func transferData(ctx context.Context, batchSize int64, canSetupCollection bool, receiver domain.Receiver, sender *domain.Sender, wg *sync.WaitGroup) {
 
 	collectionName := receiver.GetCollectionName()
 
 	var lastPosition int64 = 0
 	count := 1
 
-	if region == constants.ReceiverDefaultLocally {
+	if canSetupCollection {
 		receiver.SetupCollection(ctx)
 	}
 
