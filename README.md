@@ -1,4 +1,5 @@
 ## Mongo Transporter
+[![Docker Build and Push](https://github.com/iago-f-s-e/mongo-transporter/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/iago-f-s-e/mongo-transporter/actions/workflows/docker-publish.yml)
 
 Este é um projeto para transferência de dados de um banco de dados MongoDB para outro. Ele suporta os seguintes bancos de dados para atuar como *Receiver* (Banco que receberá a transferência):
 
