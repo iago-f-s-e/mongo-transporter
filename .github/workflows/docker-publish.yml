@@ -32,7 +32,7 @@ jobs:
           tags: ${{ env.DOCKER_REPO_URL }}:latest, ${{ env.DOCKER_REPO_URL }}:${{ github.ref }}
           secrets: |
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-            DOCKER_PASSWORDS=${{ secrets.DOCKER_PASSWORDS }}
+            DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}
 
 env:
-  DOCKER_REPO_URL: docker.io/${{ secrets.DOCKER_USERNAME }}/${{ basename github.repository }}
+  DOCKER_REPO_URL: docker.io/${{ secrets.DOCKER_USERNAME }}/mongo-transporter
