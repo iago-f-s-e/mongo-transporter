@@ -9,8 +9,10 @@ import (
 )
 
 type ReceiverConfig struct {
-	Uri  string `toml:"connection"`
-	Type string `toml:"type,omitempty"`
+	Uri         string `toml:"connection"`
+	DisablleSSL bool   `toml:"disable-ssl,omitempty"`
+	Region      string `toml:"region,omitempty"`
+	Type        string `toml:"type,omitempty"`
 }
 
 func (r ReceiverConfig) Error() error {
@@ -27,7 +29,7 @@ func (r ReceiverConfig) Error() error {
 
 type Receiver interface {
 	GetCollectionName() string
-	DeleteAllCollection(ctx context.Context)
+	SetupCollection(ctx context.Context)
 	InsertOnCollection(ctx context.Context, documents []interface{})
 	ReflectWatchOnInsert(ctx context.Context, fullDocument primitive.M)
 	ReflectWatchOnDelete(ctx context.Context, id primitive.ObjectID)

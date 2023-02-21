@@ -18,7 +18,7 @@ func transferData(ctx context.Context, batchSize int64, receiver domain.Receiver
 
 	var lastPosition int64 = 0
 	count := 1
-	receiver.DeleteAllCollection(ctx)
+	receiver.SetupCollection(ctx)
 
 	for {
 		documents, newLastPosition, err := sender.GetCollectionWithPagination(ctx, batchSize, lastPosition)
@@ -48,7 +48,7 @@ func transferData(ctx context.Context, batchSize int64, receiver domain.Receiver
 func transferDataOnInsertEvent(ctx context.Context, event primitive.M, receiver domain.Receiver) {
 	collectionName := receiver.GetCollectionName()
 
-	fullDocument := event["fullDocument"].(primitive.D).Map()
+	fullDocument := utils.MakeMongoMap(event["fullDocument"])
 
 	utils.PrintWithCollection(collectionName, "[INSERT]", fullDocument)
 
