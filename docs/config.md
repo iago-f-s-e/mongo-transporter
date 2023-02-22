@@ -50,7 +50,7 @@ watch-collections=["users"]
 
 - **receiver _(obrigatório)_:** Seção que armazena as informações de conexão do banco de dados destinatário.
 
-  - **connection _(obrigatório)_:** URL de conexão do banco de dados destinatário
+  - **connection _(opcional somente para cloud dynamodb)_:** URL de conexão do banco de dados destinatário
 
     ---
 

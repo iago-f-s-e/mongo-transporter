@@ -12,6 +12,10 @@ const TomlFileTransferCollectionsError string = "[ERROR] transfer collections is
 
 const TomlFileReceiverUriError string = "[ERROR] receiver connection is not valid, must not be empty"
 
+const TomlFileReceiverAccessKeyError string = "[ERROR] receiver access key id is not valid, must not be empty"
+
+const TomlFileReceiverSecretKeyError string = "[ERROR] receiver secret access key is not valid, must not be empty"
+
 const TomlFileSenderUriError string = "[ERROR] sender connection is not valid, must not be empty"
 
 const TomlFileMappingColletionNameError string = "[ERROR] mapping is not valid, collection name must not be empty"

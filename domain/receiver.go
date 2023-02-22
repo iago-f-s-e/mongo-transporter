@@ -19,12 +19,20 @@ type ReceiverConfig struct {
 }
 
 func (r ReceiverConfig) Error() error {
-	if r.Uri == "" {
+	if r.Region == constants.ReceiverDefaultLocally && r.Uri == "" {
 		return errors.New(constants.TomlFileReceiverUriError)
 	}
 
 	if r.Type == "" {
 		return errors.New(constants.TomlFileReceiverTypeError)
+	}
+
+	if r.Region != constants.ReceiverDefaultLocally && r.AccessKeyId == "" {
+		return errors.New(constants.TomlFileReceiverAccessKeyError)
+	}
+
+	if r.Region != constants.ReceiverDefaultLocally && r.SecretAccessKey == "" {
+		return errors.New(constants.TomlFileReceiverSecretKeyError)
 	}
 
 	return nil
