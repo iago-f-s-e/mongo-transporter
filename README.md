@@ -1,36 +1,42 @@
 ## Mongo Transporter
 [![Docker Build and Push](https://github.com/iago-f-s-e/mongo-transporter/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/iago-f-s-e/mongo-transporter/actions/workflows/docker-publish.yml)
 
-Este é um projeto para transferência de dados de um banco de dados MongoDB para outro. Ele suporta os seguintes bancos de dados para atuar como *Receiver* (Banco que receberá a transferência):
+<details>
+  <summary>Language</summary>
+  
+  * [Portuguese](https://github.com/iago-f-s-e/mongo-transporter/blob/main/docs/pt-br/README.md)
+
+</details>
+
+---
+
+This is a project for transferring data from one MongoDB database to another. It supports the following databases to act as the *Receiver* (database that will receive the transfer):
 
 - DynamoDB
 - MongoDB
 
-Com este projeto, você pode facilmente transferir dados de um banco de dados MongoDB para outro banco compatível com as configurações desejadas.
+With this project, you can easily transfer data from one MongoDB database to another compatible database with the desired settings.
 
+### Summary
 
-### Sumário
+- [Prerequisites](#pré-requisitos)
+- [Installation with Docker](#instalação-com-docker)
+- [Installation with Repository](#instalação-com-repositório)
+- [Configuration](#configuração)
+- [Execution](#execução)
+- [Stop](#parada)
+- [Contribution](#contribuição)
 
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação com Docker](#instalação-com-docker)
-- [Instalação com Repositório](#instalação-com-repositório)
-- [Configuração](#configuração)
-- [Execução](#execução)
-- [Parada](#parada)
-- [Contribuição](#contribuição)
-
-
-### <p name="pré-requisitos">Pré-requisitos</p>
+### <p name="pré-requisitos">Prerequisites</p>
  - Docker
  - Docker Compose
 
 ### <p name="instalação-com-docker">Instalação com Docker</p>
-1. Baixe a imagem do projeto executando o comando:
+1. Download the project image by running the command:
   ```bash
   docker pull iagofse/mongo-transporter:latest
-  ```
 
-1. Crie o arquivo de configuração com o nome `config.toml`:
+2. Create the configuration file with the name `config.toml`:
 ```toml
 batch-size=1000
 database-name="app-db"
@@ -53,71 +59,68 @@ watch-collections=["users"]
   collection-name="users"
   collection-map="REMOTE_USERS"
 ```
+Learn more about the configurations [_here_](#Configuration)
 
-Veja mais sobre as configurações [_aqui_](#Configuração)
-
-3. Inicie o container no mesmo diretório que você criou o arquivo de configuração:
+3. Start the container in the same directory where you created the configuration file:
   ```bash
   docker run -v $(pwd):/app/config mongo-transporter-test-build    
   ```
 
-### <p name="instalação-com-repositório">Instalação com Repositório</p>
-1. Clone este repositório:
+### <p name="instalação-com-repositório">Installation with Repository</p>
+1. Clone this repository:
   ```bash
   git clone https://github.com/iago-f-s-e/mongo-transporter.git
   ```
 
-2. Entre na pasta do projeto:
+2. Enter the project folder:
   ```bash
   cd mongo-transporter
   ```
 
-3. Crie uma cópia do arquivo `config.example.toml` com o nome `config.toml` e preencha as informações necessárias:
+3. Make a copy of the `config.example.toml` file with the name `config.toml` and fill in the necessary information:
   ```bash
   cp config.example.toml config/config.toml
   ```
 
-
 ---
-4. Inicie o container do banco de dados *(opcional)*:
-    1. Crie uma cópia do arquivo `.env.example` com o nome `.env` e preencha as informações necessárias:
+4. Start the database container (_optional_):
+    1. Make a copy the `.env.example` file with the name `.env` and fill in the necessary information:
     ```bash
     cp .drivers/[mongo, dynamo]/.env.example .drivers/[mongo, dynamo]/.env
     ```
 
-    2. Inicie o container:
+    2. Start the container:
     ```bash
     docker-compose -f .drivers/[mongo, dynamo]/docker-compose.yml up -d
     ```
 
-    3. Aguarde o container subir, você pode verificar no endpoint abaixo:
+    3. Wait for the container to start, you can check it on the endpoint below:
     ```url
     http://localhost:{UI_PORT}
     ```
 
-    4. Para parar o container, basta executar o seguinte comando:
+    4. To stop the container, just run the following command:
     ```bash
     docker-compose -f .drivers/[mongo, dynamo]/docker-compose.yml down
     ```
 ---
 
-
-5. Inicie o container:
+5. Start the container:
   ```bash
   docker-compose up -d
   ```
 
-### <p name="configuração">Configuração</p>
-O arquivo de configuração `config.toml` permite configurar as informações de origem e destino dos dados. Além disso, é possível configurar outras opções, como o tamanho do lote que será transferido. Veja mais [_aqui._](https://github.com/iago-f-s-e/mongo-transporter/blob/main/docs/config.md)
+### <p name="configuração">Configuration</p>
+The `config.toml` configuration file allows you to configure the source and destination information for the data. Additionally, it is possible to configure other options such as the batch size tha will be transferred. Learn mode [_here._](https://github.com/iago-f-s-e/mongo-transporter/blob/main/docs/en/config.md)
 
-### <p name="execução">Execução</p>
-Ao executar a aplicação, o container será iniciado e o projeto começará a transportar os dados. É possível verificar o progresso no log do container.
+### <p name="execução">Execution</p>
+When running the application, the container will be started and the project will begin transporting the data. It is possible to check the progress in the container log.
 
-### <p name="parada">Parada</p>
-Para parar o container, basta executar o seguinte comando:
+### <p name="parada">Stop</p>
+To stop the container, just run the following command:
   ```bash
   docker-compose down
   ```
 
-### <p name="contribuição">Contribuição</p>
-Contribuições são bem-vindas! Sinta-se livre para enviar um pull request com suas alterações.
+### <p name="contribuição">Contribution</p>
+Contributions are welcome! Feel free to submit a pull request with your changes.

@@ -46,8 +46,6 @@ watch-collections=["users"]
 
 ---
 
-  session-token=""
-
 - **receiver _(obrigatório)_:** Seção que armazena as informações de conexão do banco de dados destinatário.
 
   - **connection _(opcional somente para cloud dynamodb)_:** URL de conexão do banco de dados destinatário
@@ -56,6 +54,7 @@ watch-collections=["users"]
 
   - **type _(opcional)_:** Tipo do banco de dados destinatário. Lista de tipos compatíveis:
     - mongodb _(default)_
+    - dynamodb
 
     ---
 
@@ -86,8 +85,8 @@ watch-collections=["users"]
 
 - **mapping _(opcional)_:** Seção que informa as configurações de mapeamento.
 
-  - **collection-name _(obrigatório somente se informado collection-map)_:** Coleção do _remetente_ a ser mapeada no _destinatário_
+  - **collection-name _(obrigatório somente se informado `collection-map`)_:** Coleção do _remetente_ a ser mapeada no _destinatário_
 
     ---
 
-  - **collection-map _(obrigatório somente se informado collection-name)_:** Coleção mapeada no _destinatário_
+  - **collection-map _(obrigatório somente se informado `collection-name`)_:** Coleção mapeada no _destinatário_
