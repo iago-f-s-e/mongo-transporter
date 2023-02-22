@@ -16,13 +16,7 @@ func decodeReceiver(config interface{}) domain.ReceiverConfig {
 		return receiverconfig
 	}
 
-	connection, ok := receiver.(map[string]interface{})["connection"]
-
-	if !ok {
-		return receiverconfig
-	}
-
-	receiverconfig.Uri = string(connection.(string))
+	receiverconfig.Uri = decodeReceiverConnection(receiver)
 	receiverconfig.Type = decodeReceiverType(receiver)
 	receiverconfig.Region = decodeReceiverRegion(receiver)
 	receiverconfig.AccessKeyId = decodeReceiverAccessKeyId(receiver)
@@ -107,6 +101,16 @@ func decodeDbName(config interface{}) string {
 	}
 
 	return string(dbName.(string))
+}
+
+func decodeReceiverConnection(receiver interface{}) string {
+	connection, ok := receiver.(map[string]interface{})["connection"]
+
+	if !ok {
+		return ""
+	}
+
+	return string(connection.(string))
 }
 
 func decodeReceiverRegion(receiver interface{}) string {
