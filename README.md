@@ -3,6 +3,7 @@
 
 Este é um projeto para transferência de dados de um banco de dados MongoDB para outro. Ele suporta os seguintes bancos de dados para atuar como *Receiver* (Banco que receberá a transferência):
 
+- DynamoDB
 - MongoDB
 
 Com este projeto, você pode facilmente transferir dados de um banco de dados MongoDB para outro banco compatível com as configurações desejadas.
