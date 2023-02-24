@@ -35,6 +35,7 @@ With this project, you can easily transfer data from one MongoDB database to ano
 1. Download the project image by running the command:
   ```bash
   docker pull iagofse/mongo-transporter:latest
+  ```
 
 2. Create the configuration file with the name `config.toml`:
 ```toml
